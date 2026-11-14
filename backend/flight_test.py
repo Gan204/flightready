@@ -42,7 +42,7 @@ def display_flight(flight, requested_iata=None):
     codeshare_airline = codeshared.get("airline_name")
 
     print("\n--- FlightReady: Flight information ---")
-    if requested_iata and requested_iata == codeshare_number:
+    if requested_iata and requested_iata.upper() == (codeshare_number or "").upper():
         print("Requested flight:", requested_iata)
         print("Marketing airline:", codeshare_airline or "Not provided")
         print("Operating flight:", operating_number)
@@ -147,8 +147,8 @@ def main():
             details = record.get("flight") or {}
             codeshared = details.get("codeshared") or {}
             return (
-                details.get("iata") == flight_iata
-                or codeshared.get("flight_iata") == flight_iata
+                (details.get("iata") or "").upper() == flight_iata
+                or (codeshared.get("flight_iata") or "").upper() == flight_iata
             )
 
         # Prefer a record that explicitly contains the requested flight number,
