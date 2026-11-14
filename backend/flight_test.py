@@ -54,6 +54,18 @@ def display_flight(flight):
     print("This is a data-retrieval test, not a connection-risk prediction.")
 
 
+def flight_group_key(flight):
+    """Group records that appear to describe the same scheduled journey."""
+    departure = flight.get("departure") or {}
+    arrival = flight.get("arrival") or {}
+    return (
+        departure.get("iata"),
+        departure.get("scheduled"),
+        arrival.get("iata"),
+        arrival.get("scheduled"),
+    )
+
+
 def main():
     load_local_env()
     api_key = os.getenv("AVIATIONSTACK_API_KEY", "").strip()
@@ -107,9 +119,30 @@ def main():
         print("Try a flight that is operating today, and check the flight number.")
         return 0
 
-    print(f"Found {len(flights)} record(s) for {flight_iata}.")
+    # Aviationstack may return several airline flight numbers for one
+    # journey (codeshare records). Group identical scheduled journeys.
+    grouped = {}
     for flight in flights:
-        display_flight(flight)
+        key = flight_group_key(flight)
+        grouped.setdefault(key, []).append(flight)
+
+    print(
+        f"Found {len(flights)} API record(s) for {flight_iata}, "
+        f"representing {len(grouped)} distinct scheduled journey(s)."
+    )
+
+    for records in grouped.values():
+        display_flight(records[0])
+
+        other_numbers = []
+        for record in records:
+            details = record.get("flight") or {}
+            number = details.get("iata") or details.get("number")
+            if number and number not in other_numbers:
+                other_numbers.append(number)
+
+        if len(other_numbers) > 1:
+            print("Other matching flight numbers:", ", ".join(other_numbers))
 
     return 0
 
