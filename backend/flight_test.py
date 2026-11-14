@@ -11,7 +11,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-API_URL = "https://api.apilayer.net/aviationstack/v1/flights"
+API_URL = "https://api.aviationstack.com/v1/flights"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
