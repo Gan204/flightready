@@ -22,8 +22,8 @@ FlightReady will retrieve flight information and estimate whether a connecting f
 - [x] Project concept established
 - [x] GitHub repository created
 - [x] Flight API selected for initial testing (Aviationstack)
-- [ ] Successful real-flight API test
-- [ ] Connection time calculation
+- [x] Successful real-flight API test
+- [x] First two-flight connection time calculator (prototype; needs validation)
 - [ ] Basic user interface
 - [ ] First version deployed
 
@@ -35,6 +35,7 @@ FlightReady will retrieve flight information and estimate whether a connecting f
 ## Repository Structure
 
 - `backend/flight_test.py` — first flight-data retrieval test
+- `backend/connection_test.py` — two-flight connection-time calculator prototype
 - `backend/README.md` — setup and run instructions
 - `.env.example` — safe API-key template
 - `.gitignore` — keeps local API keys out of Git
@@ -42,3 +43,26 @@ FlightReady will retrieve flight information and estimate whether a connecting f
 ## Disclaimer
 
 FlightReady is an independent passenger-support prototype, not an official airline service. Flight information may be delayed or incomplete. Always verify travel details with the airline or airport.
+
+
+## Run the connection calculator
+
+In GitHub Codespaces, run:
+
+```bash
+python backend/connection_test.py
+```
+
+Enter the first flight number, connecting flight number, and travel date
+(`YYYY-MM-DD`). Flight numbers are accepted in upper-, lower-, or mixed-case,
+and the lookup supports different airline codes.
+
+The prototype calculates the time from Flight A's actual/estimated arrival to
+Flight B's scheduled departure. It does not invent a minimum connection time:
+until reliable airport/terminal/airline requirements are available, it will not
+label a positive connection time as definitely safe or at risk. It also does
+not provide a personalised action plan; those features are deferred in the MVP.
+
+The current Aviationstack flights endpoint may not return every future flight
+or every date on the free plan. If a flight/date is not returned, FlightReady
+will show an error rather than inventing a result.
