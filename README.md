@@ -53,8 +53,10 @@ In GitHub Codespaces, run:
 python backend/connection_test.py
 ```
 
-Enter the first flight number, connecting flight number, and travel date
-(`YYYY-MM-DD`). Flight numbers are accepted in upper-, lower-, or mixed-case,
+Enter the first flight number, connecting flight number, and each flight's
+ departure date (`YYYY-MM-DD`). Press Enter for the connecting-flight date if
+ it is the same as the first flight's date. Separate dates support connections
+ that cross midnight. Flight numbers are accepted in upper-, lower-, or mixed-case,
 and the lookup supports different airline codes.
 
 The prototype calculates the time from Flight A's actual/estimated arrival to
