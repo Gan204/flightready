@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eff7ff">
+  <title>FlightReady | Make every connection count</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">✈</span>
+        <span>Flight<span class="brand-light">Ready</span></span>
+      </a>
+      <span class="top-note"><span class="live-dot"></span> Your journey, made clearer</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow"><span>✦</span> SMARTER CONNECTIONS START HERE</div>
+          <h1>Make your next<br><span>connection</span> with confidence.</h1>
+          <p>Enter your flights and see how much time you have between landing and taking off again.</p>
+          <div class="hero-points">
+            <span><b>✓</b> Real flight data</span>
+            <span><b>✓</b> Time-zone aware</span>
+            <span><b>✓</b> Simple results</span>
+          </div>
+        </div>
+        <div class="sky-art" aria-hidden="true">
+          <div class="sun"></div>
+          <div class="cloud cloud-one"></div>
+          <div class="cloud cloud-two"></div>
+          <div class="flight-path"></div>
+          <div class="plane">✈</div>
+          <div class="sky-label">YOUR JOURNEY<br><strong>TAKES FLIGHT</strong></div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow dark">CONNECTION CHECKER</div>
+            <h2>Plan your connection</h2>
+            <p>Tell us about both flights. We'll calculate the time in between.</p>
+          </div>
+          <div class="step-pill"><span>01</span> Flight details</div>
+        </div>
+
+        <form method="post" class="flight-form">
+          <div class="flight-input-card">
+            <div class="card-top">
+              <span class="flight-icon departure-icon">↗</span>
+              <div><h3>First flight</h3><p>The flight you're arriving on</p></div>
+              <span class="flight-tag">FLIGHT A</span>
+            </div>
+            <label for="first_number">Flight number</label>
+            <input id="first_number" name="first_number" value="{{ values.first_number }}" placeholder="e.g. SQ318" autocomplete="off" required>
+            <label for="first_date">Departure date</label>
+            <input id="first_date" name="first_date" type="date" value="{{ values.first_date }}" required>
+          </div>
+
+          <div class="connector"><span>↓</span><small>YOUR CONNECTION</small></div>
+
+          <div class="flight-input-card">
+            <div class="card-top">
+              <span class="flight-icon arrival-icon">↘</span>
+              <div><h3>Connecting flight</h3><p>The flight you need to catch next</p></div>
+              <span class="flight-tag">FLIGHT B</span>
+            </div>
+            <label for="second_number">Flight number</label>
+            <input id="second_number" name="second_number" value="{{ values.second_number }}" placeholder="e.g. BA123" autocomplete="off" required>
+            <label for="second_date">Departure date <span class="optional">· same day? leave blank</span></label>
+            <input id="second_date" name="second_date" type="date" value="{{ values.second_date }}">
+          </div>
+
+          <button class="submit-button" type="submit">Check my connection <span>→</span></button>
+          <p class="form-footnote"><span>🔒</span> Your API key stays private on the server.</p>
+        </form>
+
+        {% if error %}
+        <div class="message error-message" role="alert">
+          <span class="message-icon">!</span>
+          <div><strong>We couldn't check that connection</strong><p>{{ error }}</p></div>
+        </div>
+        {% endif %}
+
+        {% if result %}
+        <section class="results" aria-live="polite">
+          <div class="result-heading">
+            <div><div class="eyebrow dark">YOUR CONNECTION SNAPSHOT</div><h2>Here's your journey</h2></div>
+            <span class="airport-pill">✦ {{ result.airport }}</span>
+          </div>
+          <div class="journey-cards">
+            <article class="journey-card">
+              <div class="journey-label">ARRIVING FLIGHT</div>
+              <h3>{{ result.first.airline }}</h3>
+              <div class="flight-number">{{ result.first.number }}</div>
+              {% if result.first.operating %}<p class="operated">Operated by {{ result.first.operating }}</p>{% endif %}
+              <div class="route"><span>{{ result.first.from_code }}</span><i>→</i><span>{{ result.first.to_code }}</span></div>
+              <p class="airport-name">{{ result.first.to }}</p>
+              <div class="time-box"><small>ARRIVAL TIME USED</small><strong>{{ result.first.time }}</strong></div>
+            </article>
+            <article class="journey-card">
+              <div class="journey-label">NEXT FLIGHT</div>
+              <h3>{{ result.second.airline }}</h3>
+              <div class="flight-number">{{ result.second.number }}</div>
+              {% if result.second.operating %}<p class="operated">Operated by {{ result.second.operating }}</p>{% endif %}
+              <div class="route"><span>{{ result.second.from_code }}</span><i>→</i><span>{{ result.second.to_code }}</span></div>
+              <p class="airport-name">{{ result.second.from }}</p>
+              <div class="time-box"><small>SCHEDULED DEPARTURE</small><strong>{{ result.second.time }}</strong></div>
+            </article>
+          </div>
+          <div class="connection-result {% if not result.positive %}result-warning{% endif %}">
+            <div class="result-clock">◷</div>
+            <div><small>TIME BETWEEN THE TWO FLIGHTS</small>
+              {% if result.positive %}<strong>{{ result.duration }}</strong><p>This is the calculated time available between the arrival and scheduled departure.</p>
+              {% else %}<strong>Departure is earlier</strong><p>Flight A is expected to arrive {{ result.duration }} after Flight B's scheduled departure. This connection is likely to be missed based on the supplied times.</p>{% endif %}
+            </div>
+          </div>
+          <div class="notice">
+            <strong>Before you travel</strong>
+            <p>This is a time calculation, not a guarantee that you can make the connection. Check the terminal, immigration, security, baggage arrangements, booking type and the airport's minimum connection time with your airline.</p>
+          </div>
+        </section>
+        {% endif %}
+      </section>
+
+      <section class="how-it-works">
+        <div class="eyebrow dark">CLEAR FROM TAKE-OFF TO LANDING</div>
+        <h2>How FlightReady helps</h2>
+        <div class="benefit-grid">
+          <div><span>01</span><h3>Add both flights</h3><p>Enter the flight numbers and travel dates.</p></div>
+          <div><span>02</span><h3>Check the timings</h3><p>We compare the first flight's arrival with the next flight's departure.</p></div>
+          <div><span>03</span><h3>Know what to verify</h3><p>See the important airport and airline factors before you travel.</p></div>
+        </div>
+      </section>
+    </main>
+
+    <footer><span class="brand-mark">✈</span> FlightReady <span>·</span> A student-built aviation project. Always confirm details with your airline.</footer>
+  </div>
+</body>
+</html>
