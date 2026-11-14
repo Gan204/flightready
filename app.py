@@ -135,12 +135,22 @@ def index():
                     }
             except RuntimeError as exc:
                 message = str(exc)
-                if "No matching record" in message or "No exact record" in message:
+                if message.startswith("No exact record for "):
                     error = (
                         message
-                        + " Check the flight number and date. The API may not cover "
-                        "this flight or future schedules on your current plan. "
-                        "Try a flight with a record available in your API account."
+                        + " FlightReady has not used the record from another date. "
+                        "This does not mean the flight is cancelled or not operating; "
+                        "it means the API account did not provide an exact match for "
+                        "the date you entered. Check the flight date and try again "
+                        "when the provider has matching data."
+                    )
+                elif message.startswith("No matching record for "):
+                    error = (
+                        message
+                        + " The API did not return a record for this flight number. "
+                        "Check the spelling and try another flight that appears in "
+                        "your Aviationstack account. This result does not confirm "
+                        "that the flight is cancelled."
                     )
                 else:
                     error = message
