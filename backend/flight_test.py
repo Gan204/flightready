@@ -30,15 +30,26 @@ def load_local_env():
         os.environ.setdefault(name.strip(), value)
 
 
-def display_flight(flight):
+def display_flight(flight, requested_iata=None):
     airline = flight.get("airline") or {}
     details = flight.get("flight") or {}
+    codeshared = details.get("codeshared") or {}
     departure = flight.get("departure") or {}
     arrival = flight.get("arrival") or {}
 
+    operating_number = details.get("iata") or details.get("number") or "Not provided"
+    codeshare_number = codeshared.get("flight_iata")
+    codeshare_airline = codeshared.get("airline_name")
+
     print("\n--- FlightReady: Flight information ---")
-    print("Flight:", details.get("iata") or details.get("number") or "Not provided")
-    print("Airline:", airline.get("name") or "Not provided")
+    if requested_iata and requested_iata == codeshare_number:
+        print("Requested flight:", requested_iata)
+        print("Marketing airline:", codeshare_airline or "Not provided")
+        print("Operating flight:", operating_number)
+        print("Operating airline:", airline.get("name") or "Not provided")
+    else:
+        print("Flight:", operating_number)
+        print("Airline:", airline.get("name") or "Not provided")
     print("Status:", flight.get("flight_status") or "Not provided")
     print("\nDeparture")
     print("  Airport:", departure.get("airport") or "Not provided")
@@ -132,14 +143,29 @@ def main():
     )
 
     for records in grouped.values():
-        display_flight(records[0])
+        def matches_requested(record):
+            details = record.get("flight") or {}
+            codeshared = details.get("codeshared") or {}
+            return (
+                details.get("iata") == flight_iata
+                or codeshared.get("flight_iata") == flight_iata
+            )
+
+        # Prefer a record that explicitly contains the requested flight number,
+        # either as the operating flight or as a marketed codeshare flight.
+        selected = next((r for r in records if matches_requested(r)), records[0])
+        display_flight(selected, flight_iata)
 
         other_numbers = []
         for record in records:
             details = record.get("flight") or {}
-            number = details.get("iata") or details.get("number")
-            if number and number not in other_numbers:
-                other_numbers.append(number)
+            codeshared = details.get("codeshared") or {}
+            for number in (
+                details.get("iata") or details.get("number"),
+                codeshared.get("flight_iata"),
+            ):
+                if number and number not in other_numbers:
+                    other_numbers.append(number)
 
         if len(other_numbers) > 1:
             print("Other matching flight numbers:", ", ".join(other_numbers))
