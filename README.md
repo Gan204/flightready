@@ -24,7 +24,8 @@ FlightReady will retrieve flight information and estimate whether a connecting f
 - [x] Flight API selected for initial testing (Aviationstack)
 - [x] Successful real-flight API test
 - [x] First two-flight connection time calculator (prototype; needs validation)
-- [ ] Basic user interface
+- [x] First friendly responsive web interface added
+- [ ] Test the web interface in Codespaces
 - [ ] First version deployed
 
 ## Technology
@@ -34,6 +35,10 @@ FlightReady will retrieve flight information and estimate whether a connecting f
 
 ## Repository Structure
 
+- `app.py` — Flask web app entry point
+- `templates/index.html` — FlightReady interface
+- `static/styles.css` — responsive aviation-inspired styling
+- `requirements.txt` — web app dependency
 - `backend/flight_test.py` — first flight-data retrieval test
 - `backend/connection_test.py` — two-flight connection-time calculator prototype
 - `backend/README.md` — setup and run instructions
@@ -68,3 +73,40 @@ not provide a personalised action plan; those features are deferred in the MVP.
 The current Aviationstack flights endpoint may not return every future flight
 or every date on the free plan. If a flight/date is not returned, FlightReady
 will show an error rather than inventing a result.
+
+
+## Run the FlightReady web app
+
+In GitHub Codespaces, first pull the latest changes:
+
+```bash
+git pull
+```
+
+Install the web app dependency:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Start the app:
+
+```bash
+python app.py
+```
+
+Codespaces should offer to open port 5000 in a browser. If it does not,
+open the **Ports** tab, find port **5000**, and choose **Open in Browser**.
+
+The API key stays in the project-root `.env` file on the server. Do not put
+it in the HTML, CSS, browser JavaScript, or GitHub.
+
+**Testing note:** Example flight numbers such as `BA123` are illustrations,
+not guaranteed live flights. Use two flight numbers and dates that Aviationstack
+actually returns for your account. If no record is returned, check the spelling,
+date, API plan coverage, and whether the flight is operating. The app will show
+an explanation instead of inventing a result.
+
+The current interface displays the calculated time between flights. It does not
+yet verify minimum connection times, terminal transfers, immigration, security,
+or baggage requirements, so it must not describe a connection as guaranteed safe.
