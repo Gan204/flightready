@@ -110,3 +110,5 @@ an explanation instead of inventing a result.
 The current interface displays the calculated time between flights. It does not
 yet verify minimum connection times, terminal transfers, immigration, security,
 or baggage requirements, so it must not describe a connection as guaranteed safe.
+
+When a requested flight is returned for other dates but not the date entered, the web app explains that it has no exact date match. It does not treat a record from another date as current, and it does not imply that a missing record means the flight is cancelled.
