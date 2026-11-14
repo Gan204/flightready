@@ -216,7 +216,13 @@ def main():
     second_number = normalise_flight_number(
         input("Enter your connecting flight number (e.g. BA123): ")
     )
-    travel_date = input("Enter the travel date (YYYY-MM-DD): ").strip()
+    first_date = input("Enter the first flight's departure date (YYYY-MM-DD): ").strip()
+    second_date = input(
+        "Enter the connecting flight's departure date "
+        "(press Enter if it is the same date): "
+    ).strip()
+    if not second_date:
+        second_date = first_date
 
     for label, number in (("First flight", first_number),
                           ("Connecting flight", second_number)):
@@ -224,16 +230,18 @@ def main():
             print(f"{label}: '{number}' does not look like a valid flight number.")
             return 1
 
-    try:
-        datetime.strptime(travel_date, "%Y-%m-%d")
-    except ValueError:
-        print("Please enter the date in YYYY-MM-DD format, for example 2026-11-14.")
-        return 1
+    for label, date_value in (("First flight date", first_date),
+                              ("Connecting flight date", second_date)):
+        try:
+            datetime.strptime(date_value, "%Y-%m-%d")
+        except ValueError:
+            print(f"{label} must use YYYY-MM-DD, for example 2026-11-14.")
+            return 1
 
     try:
         print("\nRetrieving flight information...")
-        first = fetch_flight(api_key, first_number, travel_date)
-        second = fetch_flight(api_key, second_number, travel_date)
+        first = fetch_flight(api_key, first_number, first_date)
+        second = fetch_flight(api_key, second_number, second_date)
 
         first_arrival = first.get("arrival") or {}
         second_departure = second.get("departure") or {}
